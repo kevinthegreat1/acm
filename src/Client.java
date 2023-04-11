@@ -44,8 +44,10 @@ public class Client extends GraphicsProgram {
         renderer.addEdge(1 + 4, 5 + 4);
         renderer.addEdge(2 + 4, 6 + 4);
         renderer.addEdge(3 + 4, 7 + 4);
+        renderer.getCamera().addPosition(0, 0, 0.1);
         while (running) {
             update();
+            renderer.getCamera().addYaw(0.5);
             pause(10);
         }
     }

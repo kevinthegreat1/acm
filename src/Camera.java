@@ -28,6 +28,10 @@ public class Camera {
         this.position = position;
     }
 
+    public void addPosition(double x, double y, double z) {
+        this.setPosition(this.position.add(x, y, z));
+    }
+
     public Vec3d getImagePlane() {
         return imagePlane;
     }
