@@ -56,25 +56,26 @@ public class Renderer {
     }
 
     public GLine projectEdge(int vertex1, int vertex2) {
-        Vec2d projected1 = project(vertex1);
-        Vec2d projected2 = project(vertex2);
-        return new GLine(projected1.x(), projected1.y(), projected2.x(), projected2.y());
+        Pair<Vec2d, Boolean> projected1 = project(vertex1);
+        Pair<Vec2d, Boolean> projected2 = project(vertex2);
+        return new GLine(projected1.left().x(), projected1.left().y(), projected2.left().x(), projected2.left().y());
     }
 
-    public Vec2d project(int index) {
-        Vec3d Vec3d = vertices.get(index);
-        Vec3d transformed = Vec3d.subtract(camera.getPosition()).rotateX(camera.getPitch()).rotateY(camera.getYaw()).rotateZ(camera.getRoll());
+    public Pair<Vec2d, Boolean> project(int index) {
+        Vec3d vec3d = vertices.get(index);
+        Vec3d transformed = vec3d.subtract(camera.getPosition()).rotateX(camera.getPitch()).rotateY(camera.getYaw()).rotateZ(camera.getRoll());
         double x = camera.getImagePlane().z() / transformed.z() * transformed.x() + camera.getImagePlane().x();
         double y = camera.getImagePlane().z() / transformed.z() * transformed.y() + camera.getImagePlane().y();
-        return new Vec2d(client.getHalfHeight() * (x) + client.getHalfWidth(), client.getHalfHeight() * (y) + client.getHalfHeight());
+        return new Pair<>(new Vec2d(client.getHalfHeight() * (x) + client.getHalfWidth(), client.getHalfHeight() * (y) + client.getHalfHeight()), transformed.z() <= 0);
     }
 
     public void update() {
         for (Pair<Pair<Integer, Integer>, GLine> edge : edges) {
-            Vec2d projected1 = project(edge.left().left());
-            Vec2d projected2 = project(edge.left().right());
-            edge.right().setStartPoint(projected1.x(), projected1.y());
-            edge.right().setEndPoint(projected2.x(), projected2.y());
+            Pair<Vec2d, Boolean> projected1 = project(edge.left().left());
+            Pair<Vec2d, Boolean> projected2 = project(edge.left().right());
+            edge.right().setVisible(projected1.right() && projected2.right());
+            edge.right().setStartPoint(projected1.left().x(), projected1.left().y());
+            edge.right().setEndPoint(projected2.left().x(), projected2.left().y());
         }
     }
 }
